@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔴🔵 MATH BATTLE CERAH - KEYPAD BESAR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            max-width: 1600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.5);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .game-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 5px solid #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-header::before {
+            content: '🔢 🧮 ✖️ ➗ ➕ ➖';
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            font-size: 2rem;
+            opacity: 0.3;
+            transform: rotate(10deg);
+        }
+        
+        .game-header::after {
+            content: '🧮 ✖️ ➗';
+            position: absolute;
+            bottom: 10px;
+            left: 30px;
+            font-size: 2rem;
+            opacity: 0.3;
+            transform: rotate(-5deg);
+        }
+        
+        .game-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+        
+        .game-header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        }
+        
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 25px;
+            background: #ffeaa7;
+            border-bottom: 3px solid #fdcb6e;
+            flex-wrap: wrap;
+        }
+        
+        .level-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            background: white;
+            color: #2d3436;
+            border: 2px solid #fdcb6e;
+            box-shadow: 0 5px 0 #e17055;
+        }
+        
+        .level-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 0 #e17055;
+        }
+        
+        .level-btn.active {
+            background: #fdcb6e;
+            color: white;
+            border-color: #e17055;
+            box-shadow: 0 7px 0 #e17055;
+            transform: translateY(-2px);
+        }
+        
+        .battle-arena {
+            display: flex;
+            min-height: 700px;
+        }
+        
+        /* SISI MERAH */
+        .red-side {
+            flex: 1;
+            background: #ffcccc;
+            border-right: 5px solid #ff6b6b;
+            padding: 30px;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+        
+        .red-side::before {
+            content: '🔴';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 3rem;
+            opacity: 0.2;
+            transform: rotate(-10deg);
+        }
+        
+        .red-side::after {
+            content: '🐯';
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 4rem;
+            opacity: 0.2;
+            transform: rotate(10deg);
+        }
+        
+        /* SISI BIRU */
+        .blue-side {
+            flex: 1;
+            background: #d4f1f9;
+            border-left: 5px solid #4ecdc4;
+            padding: 30px;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(78, 205, 196, 0.3);
+        }
+        
+        .blue-side::before {
+            content: '🔵';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            opacity: 0.2;
+            transform: rotate(10deg);
+        }
+        
+        .blue-side::after {
+            content: '🐧';
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            font-size: 4rem;
+            opacity: 0.2;
+            transform: rotate(-10deg);
+        }
+        
+        .team-content {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .team-score-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 30px;
+            border: 3px solid;
+            backdrop-filter: blur(5px);
+        }
+        
+        .team-score-box.red {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 0 #c44545;
+        }
+        
+        .team-score-box.blue {
+            border-color: #4ecdc4;
+            box-shadow: 0 10px 0 #2c8f8a;
+        }
+        
+        .team-score-label {
+            font-size: 1.3rem;
+            color: #2d3436;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .team-score-number {
+            font-size: 5rem;
+            font-weight: bold;
+        }
+        
+        .team-score-number.red {
+            color: #ff6b6b;
+            text-shadow: 3px 3px 0 #c44545;
+        }
+        
+        .team-score-number.blue {
+            color: #4ecdc4;
+            text-shadow: 3px 3px 0 #2c8f8a;
+        }
+        
+        .team-timer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 30px;
+            font-size: 3rem;
+            font-weight: bold;
+            border: 3px solid;
+            backdrop-filter: blur(5px);
+        }
+        
+        .team-timer.red {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            box-shadow: 0 8px 0 #c44545;
+        }
+        
+        .team-timer.red.warning {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        
+        .team-timer.blue {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+            box-shadow: 0 8px 0 #2c8f8a;
+        }
+        
+        .team-timer.blue.warning {
+            background: #4ecdc4;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        
+        .question-area {
+            background: rgba(255,255,255,0.8);
+            border-radius: 40px;
+            padding: 25px;
+            border: 3px solid;
+            backdrop-filter: blur(5px);
+        }
+        
+        .question-area.red {
+            border-color: #ff6b6b;
+        }
+        
+        .question-area.blue {
+            border-color: #4ecdc4;
+        }
+        
+        .question-text {
+            font-size: 2.5rem;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            word-break: break-word;
+            background: white;
+            padding: 20px;
+            border-radius: 30px;
+            border: 2px dashed;
+        }
+        
+        .question-text.red {
+            border-color: #ff6b6b;
+        }
+        
+        .question-text.blue {
+            border-color: #4ecdc4;
+        }
+        
+        .question-category {
+            text-align: center;
+            color: #636e72;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background: #dfe6e9;
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            font-weight: bold;
+        }
+        
+        .answer-display {
+            background: white;
+            border: 3px solid;
+            border-radius: 30px;
+            padding: 20px;
+            font-size: 3rem;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
+        }
+        
+        .answer-display.red {
+            border-color: #ff6b6b;
+        }
+        
+        .answer-display.blue {
+            border-color: #4ecdc4;
+        }
+        
+        /* KEYPAD BESAR (lebih gampang dipencet) */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .keypad-btn {
+            padding: 25px;
+            font-size: 2.5rem;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px solid;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+        }
+        
+        .keypad-btn.red {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .keypad-btn.red:hover:not(:disabled) {
+            background: #ff6b6b;
+            color: white;
+            transform: scale(0.95);
+            box-shadow: 0 5px 0 #c44545;
+        }
+        
+        .keypad-btn.blue {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+        
+        .keypad-btn.blue:hover:not(:disabled) {
+            background: #4ecdc4;
+            color: white;
+            transform: scale(0.95);
+            box-shadow: 0 5px 0 #2c8f8a;
+        }
+        
+        .keypad-btn:active:not(:disabled) {
+            transform: scale(0.9);
+        }
+        
+        .keypad-btn.zero {
+            grid-column: span 3;
+        }
+        
+        .keypad-btn.minus {
+            background: #ffcccc;
+            color: #ff6b6b;
+        }
+        
+        .keypad-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            padding: 20px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+        }
+        
+        .action-btn.clear {
+            background: #ffcccc;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+        
+        .action-btn.clear:hover:not(:disabled) {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #c44545;
+        }
+        
+        .action-btn.submit {
+            background: #b8f2e6;
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+        }
+        
+        .action-btn.submit:hover:not(:disabled) {
+            background: #4ecdc4;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #2c8f8a;
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .feedback-area {
+            min-height: 80px;
+            padding: 15px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            border: 3px solid;
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .feedback-area.red {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .feedback-area.blue {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+        
+        .status-bar {
+            background: #fdcb6e;
+            padding: 20px 30px;
+            border-top: 5px solid #e17055;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #2d3436;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            border: 3px solid white;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #2c8f8a;
+        }
+        
+        .btn-secondary {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #c44545;
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .question-number {
+            background: white;
+            padding: 10px 25px;
+            border-radius: 40px;
+            color: #2d3436;
+            font-weight: bold;
+            border: 3px solid #e17055;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .winner-announcement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 8px solid #ffeaa7;
+            border-radius: 80px;
+            padding: 60px 100px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            display: none;
+            animation: bounce 1s infinite;
+        }
+        
+        .winner-announcement h2 {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 4px 4px 0 #f5576c;
+        }
+        
+        .winner-announcement p {
+            font-size: 3rem;
+            color: #ffeaa7;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #e17055;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            display: none;
+        }
+        
+        .emoji-decor {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="winner-announcement" id="winnerAnnouncement">
+        <h2>🏆 WINNER! 🏆</h2>
+        <p id="winnerName"></p>
+    </div>
+
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🔴🔵 MATH BATTLE CERAH</h1>
+            <p>Tim Merah vs Tim Biru • Pencet angka 0-9 atau minus (-) buat jawab</p>
+        </div>
+        
+        <div class="level-selector" id="levelSelector">
+            <button class="level-btn" onclick="selectLevel('easy')">🌱 LEVEL 1 (Gampang)</button>
+            <button class="level-btn" onclick="selectLevel('medium')">🌿 LEVEL 2 (Sedang)</button>
+            <button class="level-btn" onclick="selectLevel('hard')">🔥 LEVEL 3 (Susah)</button>
+            <button class="level-btn" onclick="selectLevel('expert')">⚡ LEVEL 4 (Expert)</button>
+            <button class="level-btn" onclick="selectLevel('master')">💀 LEVEL 5 (Master)</button>
+        </div>
+        
+        <div class="battle-arena">
+            <!-- SISI MERAH -->
+            <div class="red-side">
+                <div class="team-content">
+                    <div class="team-score-box red">
+                        <div class="team-score-label">🏆 SKOR TIM MERAH</div>
+                        <div class="team-score-number red" id="redScore">0</div>
+                    </div>
+                    
+                    <div class="team-timer red" id="redTimer">10s</div>
+                    
+                    <div class="question-area red">
+                        <div class="question-text red" id="redQuestion">Pilih level dulu</div>
+                        <div class="question-category" id="redCategory">-</div>
+                        
+                        <div class="answer-display red" id="redDisplay">0</div>
+                        
+                        <!-- KEYPAD BESAR UNTUK TIM MERAH -->
+                        <div class="keypad" id="redKeypad">
+                            <button class="keypad-btn red" onclick="keypadPress('red', '1')">1</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '2')">2</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '3')">3</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '4')">4</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '5')">5</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '6')">6</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '7')">7</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '8')">8</button>
+                            <button class="keypad-btn red" onclick="keypadPress('red', '9')">9</button>
+                            <button class="keypad-btn red zero" onclick="keypadPress('red', '0')">0</button>
+                            <button class="keypad-btn red minus" onclick="keypadPress('red', '-')">−</button>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="action-btn clear" id="redClear" onclick="clearAnswer('red')" disabled>🗑️ HAPUS</button>
+                            <button class="action-btn submit" id="redSubmit" onclick="submitAnswer('red')" disabled>✅ JAWAB</button>
+                        </div>
+                        
+                        <div class="feedback-area red" id="redFeedback"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SISI BIRU -->
+            <div class="blue-side">
+                <div class="team-content">
+                    <div class="team-score-box blue">
+                        <div class="team-score-label">🏆 SKOR TIM BIRU</div>
+                        <div class="team-score-number blue" id="blueScore">0</div>
+                    </div>
+                    
+                    <div class="team-timer blue" id="blueTimer">10s</div>
+                    
+                    <div class="question-area blue">
+                        <div class="question-text blue" id="blueQuestion">Pilih level dulu</div>
+                        <div class="question-category" id="blueCategory">-</div>
+                        
+                        <div class="answer-display blue" id="blueDisplay">0</div>
+                        
+                        <!-- KEYPAD BESAR UNTUK TIM BIRU -->
+                        <div class="keypad" id="blueKeypad">
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '1')">1</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '2')">2</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '3')">3</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '4')">4</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '5')">5</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '6')">6</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '7')">7</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '8')">8</button>
+                            <button class="keypad-btn blue" onclick="keypadPress('blue', '9')">9</button>
+                            <button class="keypad-btn blue zero" onclick="keypadPress('blue', '0')">0</button>
+                            <button class="keypad-btn blue minus" onclick="keypadPress('blue', '-')">−</button>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="action-btn clear" id="blueClear" onclick="clearAnswer('blue')" disabled>🗑️ HAPUS</button>
+                            <button class="action-btn submit" id="blueSubmit" onclick="submitAnswer('blue')" disabled>✅ JAWAB</button>
+                        </div>
+                        
+                        <div class="feedback-area blue" id="blueFeedback"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="question-number" id="questionCounter">Soal ke 0/10</div>
+            <div class="game-controls">
+                <button class="control-btn btn-primary" id="nextQuestionBtn" onclick="nextQuestion()" disabled>⏩ SOAL BERIKUTNYA</button>
+                <button class="control-btn btn-secondary" id="resetGameBtn" onclick="resetGame()">🔄 RESET GAME</button>
+            </div>
+            <div id="gameStatus">🔴🔵 Pilih level buat mulai!</div>
+        </div>
+    </div>
+
+    <script>
+        // ========== GENERATE SOAL MATEMATIKA ==========
+        function generateMathQuestions(level) {
+            const questions = [];
+            const count = 10;
+            
+            for (let i = 0; i < count; i++) {
+                let num1, num2, operator, question, answer;
+                
+                switch(level) {
+                    case 'easy':
+                        operator = Math.random() < 0.5 ? '+' : '-';
+                        if (operator === '+') {
+                            num1 = Math.floor(Math.random() * 10) + 1;
+                            num2 = Math.floor(Math.random() * 10) + 1;
+                            answer = num1 + num2;
+                        } else {
+                            num1 = Math.floor(Math.random() * 15) + 5;
+                            num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
+                            answer = num1 - num2;
+                        }
+                        question = `${num1} ${operator} ${num2} = ?`;
+                        break;
+                        
+                    case 'medium':
+                        if (Math.random() < 0.5) {
+                            num1 = Math.floor(Math.random() * 9) + 2;
+                            num2 = Math.floor(Math.random() * 9) + 2;
+                            answer = num1 * num2;
+                            question = `${num1} × ${num2} = ?`;
+                        } else {
+                            num2 = Math.floor(Math.random() * 9) + 2;
+                            answer = Math.floor(Math.random() * 9) + 2;
+                            num1 = num2 * answer;
+                            question = `${num1} ÷ ${num2} = ?`;
+                        }
+                        break;
+                        
+                    case 'hard':
+                        const ops = ['+', '-', '×'];
+                        operator = ops[Math.floor(Math.random() * ops.length)];
+                        
+                        if (operator === '+') {
+                            num1 = Math.floor(Math.random() * 50) + 20;
+                            num2 = Math.floor(Math.random() * 50) + 20;
+                            answer = num1 + num2;
+                        } else if (operator === '-') {
+                            num1 = Math.floor(Math.random() * 70) + 30;
+                            num2 = Math.floor(Math.random() * (num1 - 20)) + 20;
+                            answer = num1 - num2;
+                        } else {
+                            num1 = Math.floor(Math.random() * 12) + 3;
+                            num2 = Math.floor(Math.random() * 12) + 3;
+                            answer = num1 * num2;
+                        }
+                        question = `${num1} ${operator} ${num2} = ?`;
+                        break;
+                        
+                    case 'expert':
+                        if (Math.random() < 0.5) {
+                            let a = Math.floor(Math.random() * 5) + 1;
+                            let b = Math.floor(Math.random() * 5) + 2;
+                            let c = Math.floor(Math.random() * 5) + 1;
+                            let d = Math.floor(Math.random() * 5) + 2;
+                            
+                            if (Math.random() < 0.5) {
+                                let pembilang = a*d + b*c;
+                                let penyebut = b*d;
+                                answer = (pembilang / penyebut).toFixed(2);
+                                question = `${a}/${b} + ${c}/${d} = ? (2 desimal)`;
+                            } else {
+                                let pembilang = a*d - b*c;
+                                let penyebut = b*d;
+                                answer = (pembilang / penyebut).toFixed(2);
+                                question = `${a}/${b} - ${c}/${d} = ? (2 desimal)`;
+                            }
+                        } else {
+                            num1 = (Math.random() * 10).toFixed(1);
+                            num2 = (Math.random() * 10).toFixed(1);
+                            operator = Math.random() < 0.5 ? '+' : '-';
+                            answer = (parseFloat(num1) + (operator === '+' ? 1 : -1) * parseFloat(num2)).toFixed(1);
+                            question = `${num1} ${operator} ${num2} = ? (1 desimal)`;
+                        }
+                        break;
+                        
+                    case 'master':
+                        if (Math.random() < 0.3) {
+                            let perfectSquares = [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144];
+                            num1 = perfectSquares[Math.floor(Math.random() * perfectSquares.length)];
+                            answer = Math.sqrt(num1);
+                            question = `√${num1} = ?`;
+                        } else if (Math.random() < 0.5) {
+                            num1 = Math.floor(Math.random() * 12) + 2;
+                            answer = num1 * num1;
+                            question = `${num1}² = ?`;
+                        } else {
+                            num1 = Math.floor(Math.random() * 5) + 2;
+                            answer = num1 * num1 * num1;
+                            question = `${num1}³ = ?`;
+                        }
+                        break;
+                }
+                
+                questions.push({
+                    question: question,
+                    answer: answer.toString(),
+                    category: `Level ${level.toUpperCase()}`
+                });
+            }
+            
+            return questions;
+        }
+        
+        // ========== STATE GAME ==========
+        let currentLevel = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let gameActive = false;
+        
+        // Status masing-masing tim
+        let redStatus = {
+            score: 0,
+            hasAnswered: false,
+            timer: 10,
+            timerInterval: null,
+            answer: '',
+            feedback: ''
+        };
+        
+        let blueStatus = {
+            score: 0,
+            hasAnswered: false,
+            timer: 10,
+            timerInterval: null,
+            answer: '',
+            feedback: ''
+        };
+        
+        const WIN_SCORE = 50;
+        
+        // ========== FUNGSI ==========
+        
+        function selectLevel(level) {
+            currentLevel = level;
+            
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentQuestions = generateMathQuestions(level);
+            currentQuestionIndex = 0;
+            
+            document.getElementById('nextQuestionBtn').disabled = false;
+            document.getElementById('nextQuestionBtn').textContent = '🚀 MULAI GAME';
+            document.getElementById('gameStatus').innerHTML = '🔴🔵 Klik MULAI GAME buat mulai!';
+            
+            // Tampilkan soal pertama
+            const question = currentQuestions[0];
+            document.getElementById('redQuestion').innerHTML = question.question;
+            document.getElementById('blueQuestion').innerHTML = question.question;
+            document.getElementById('redCategory').innerHTML = question.category;
+            document.getElementById('blueCategory').innerHTML = question.category;
+            document.getElementById('questionCounter').innerHTML = `Soal ke 1/${currentQuestions.length}`;
+            
+            // Reset display
+            document.getElementById('redDisplay').innerHTML = '0';
+            document.getElementById('blueDisplay').innerHTML = '0';
+            
+            // Reset feedback
+            document.getElementById('redFeedback').innerHTML = '';
+            document.getElementById('blueFeedback').innerHTML = '';
+            
+            // Disable semua
+            disableTeamControls(true);
+        }
+        
+        function disableTeamControls(disabled) {
+            // Keypad
+            document.querySelectorAll('#redKeypad .keypad-btn').forEach(btn => btn.disabled = disabled);
+            document.querySelectorAll('#blueKeypad .keypad-btn').forEach(btn => btn.disabled = disabled);
+            
+            // Buttons
+            document.getElementById('redClear').disabled = disabled;
+            document.getElementById('redSubmit').disabled = disabled;
+            document.getElementById('blueClear').disabled = disabled;
+            document.getElementById('blueSubmit').disabled = disabled;
+        }
+        
+        function resetTeamTimers() {
+            // Hentikan semua timer
+            if (redStatus.timerInterval) {
+                clearInterval(redStatus.timerInterval);
+                redStatus.timerInterval = null;
+            }
+            if (blueStatus.timerInterval) {
+                clearInterval(blueStatus.timerInterval);
+                blueStatus.timerInterval = null;
+            }
+            
+            // Reset timer value
+            redStatus.timer = 10;
+            blueStatus.timer = 10;
+            
+            // Reset tampilan timer
+            const redTimer = document.getElementById('redTimer');
+            const blueTimer = document.getElementById('blueTimer');
+            redTimer.innerHTML = '10s';
+            blueTimer.innerHTML = '10s';
+            redTimer.classList.remove('warning');
+            blueTimer.classList.remove('warning');
+            
+            // Reset status jawab
+            redStatus.hasAnswered = false;
+            blueStatus.hasAnswered = false;
+            redStatus.answer = '';
+            blueStatus.answer = '';
+            redStatus.feedback = '';
+            blueStatus.feedback = '';
+            
+            document.getElementById('redDisplay').innerHTML = '0';
+            document.getElementById('blueDisplay').innerHTML = '0';
+            document.getElementById('redFeedback').innerHTML = '';
+            document.getElementById('blueFeedback').innerHTML = '';
+        }
+        
+        function startTeamTimer(team) {
+            const status = team === 'red' ? redStatus : blueStatus;
+            const timerElement = document.getElementById(team + 'Timer');
+            
+            status.timer = 10;
+            
+            status.timerInterval = setInterval(() => {
+                status.timer--;
+                timerElement.innerHTML = status.timer + 's';
+                
+                if (status.timer <= 3) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (status.timer <= 0) {
+                    clearInterval(status.timerInterval);
+                    status.timerInterval = null;
+                    
+                    // Waktu habis, kunci kontrol tim ini
+                    document.querySelectorAll('#' + team + 'Keypad .keypad-btn').forEach(btn => btn.disabled = true);
+                    document.getElementById(team + 'Clear').disabled = true;
+                    document.getElementById(team + 'Submit').disabled = true;
+                    
+                    // Tampilkan feedback waktu habis
+                    const feedback = document.getElementById(team + 'Feedback');
+                    const question = currentQuestions[currentQuestionIndex];
+                    feedback.innerHTML = `⏰ WAKTU HABIS! Jawaban: ${question.answer}`;
+                    
+                    status.hasAnswered = true;
+                    
+                    // Cek apakah kedua tim sudah selesai
+                    checkBothTeamsDone();
+                }
+            }, 1000);
+        }
+        
+        function keypadPress(team, value) {
+            const status = team === 'red' ? redStatus : blueStatus;
+            const display = document.getElementById(team + 'Display');
+            
+            if (status.hasAnswered) return;
+            
+            // Tambah angka ke answer
+            if (value === '-') {
+                if (status.answer === '' || status.answer === '0') {
+                    status.answer = '-';
+                } else {
+                    // Cek apakah sudah ada minus di depan
+                    if (!status.answer.startsWith('-')) {
+                        status.answer = '-' + status.answer;
+                    }
+                }
+            } else {
+                if (status.answer === '0') {
+                    status.answer = value;
+                } else if (status.answer === '-') {
+                    status.answer = '-' + value;
+                } else {
+                    status.answer += value;
+                }
+            }
+            
+            display.innerHTML = status.answer === '' ? '0' : status.answer;
+        }
+        
+        function clearAnswer(team) {
+            const status = team === 'red' ? redStatus : blueStatus;
+            const display = document.getElementById(team + 'Display');
+            
+            if (status.hasAnswered) return;
+            
+            status.answer = '';
+            display.innerHTML = '0';
+        }
+        
+        function submitAnswer(team) {
+            const status = team === 'red' ? redStatus : blueStatus;
+            const feedbackElement = document.getElementById(team + 'Feedback');
+            const question = currentQuestions[currentQuestionIndex];
+            
+            if (status.hasAnswered || status.answer === '') return;
+            
+            const userAnswer = status.answer;
+            const isCorrect = userAnswer === question.answer;
+            
+            // Hentikan timer tim ini
+            if (status.timerInterval) {
+                clearInterval(status.timerInterval);
+                status.timerInterval = null;
+            }
+            
+            // Kunci kontrol tim ini
+            document.querySelectorAll('#' + team + 'Keypad .keypad-btn').forEach(btn => btn.disabled = true);
+            document.getElementById(team + 'Clear').disabled = true;
+            document.getElementById(team + 'Submit').disabled = true;
+            
+            if (isCorrect) {
+                // Tambah skor
+                if (team === 'red') {
+                    redStatus.score += 10;
+                    document.getElementById('redScore').innerHTML = redStatus.score;
+                } else {
+                    blueStatus.score += 10;
+                    document.getElementById('blueScore').innerHTML = blueStatus.score;
+                }
+                
+                feedbackElement.innerHTML = '✅ BENAR! +10 POIN ✨';
+                
+                // Tampilkan toast notif
+                showTeamToast(team, '✨ MANTAPP! ✨');
+            } else {
+                feedbackElement.innerHTML = `❌ SALAH! Jawaban: ${question.answer}`;
+                showTeamToast(team, '😅 YAA KOK SALAH SIH WKWKK');
+            }
+            
+            status.hasAnswered = true;
+            
+            // Cek apakah kedua tim sudah selesai
+            checkBothTeamsDone();
+            
+            // Cek pemenang
+            checkWinner();
+        }
+        
+        function showTeamToast(team, message) {
+            const originalStatus = document.getElementById('gameStatus').innerHTML;
+            document.getElementById('gameStatus').innerHTML = `${team === 'red' ? '🔴' : '🔵'} ${message}`;
+            setTimeout(() => {
+                document.getElementById('gameStatus').innerHTML = originalStatus;
+            }, 1500);
+        }
+        
+        function checkBothTeamsDone() {
+            if (redStatus.hasAnswered && blueStatus.hasAnswered) {
+                document.getElementById('nextQuestionBtn').disabled = false;
+            }
+        }
+        
+        function checkWinner() {
+            if (redStatus.score >= WIN_SCORE) {
+                endGame('🔴 TIM MERAH');
+            } else if (blueStatus.score >= WIN_SCORE) {
+                endGame('🔵 TIM BIRU');
+            }
+        }
+        
+        function nextQuestion() {
+            if (!currentLevel) {
+                alert('Pilih level dulu bro!');
+                return;
+            }
+            
+            if (!gameActive) {
+                startGame();
+                return;
+            }
+            
+            // Pindah ke soal berikutnya
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex >= currentQuestions.length) {
+                if (redStatus.score > blueStatus.score) {
+                    endGame('🔴 TIM MERAH');
+                } else if (blueStatus.score > redStatus.score) {
+                    endGame('🔵 TIM BIRU');
+                } else {
+                    endGame('🤝 SERI!');
+                }
+                return;
+            }
+            
+            // Update soal
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('redQuestion').innerHTML = question.question;
+            document.getElementById('blueQuestion').innerHTML = question.question;
+            document.getElementById('redCategory').innerHTML = question.category;
+            document.getElementById('blueCategory').innerHTML = question.category;
+            document.getElementById('questionCounter').innerHTML = `Soal ke ${currentQuestionIndex + 1}/${currentQuestions.length}`;
+            
+            // Reset tim untuk soal baru
+            resetTeamTimers();
+            
+            // Enable kontrol kedua tim
+            disableTeamControls(false);
+            
+            // Mulai timer masing-masing tim
+            startTeamTimer('red');
+            startTeamTimer('blue');
+            
+            // Disable next question button
+            document.getElementById('nextQuestionBtn').disabled = true;
+        }
+        
+        function startGame() {
+            gameActive = true;
+            
+            // Reset skor
+            redStatus.score = 0;
+            blueStatus.score = 0;
+            document.getElementById('redScore').innerHTML = '0';
+            document.getElementById('blueScore').innerHTML = '0';
+            
+            currentQuestionIndex = 0;
+            
+            const question = currentQuestions[0];
+            document.getElementById('redQuestion').innerHTML = question.question;
+            document.getElementById('blueQuestion').innerHTML = question.question;
+            document.getElementById('redCategory').innerHTML = question.category;
+            document.getElementById('blueCategory').innerHTML = question.category;
+            document.getElementById('questionCounter').innerHTML = `Soal ke 1/${currentQuestions.length}`;
+            
+            resetTeamTimers();
+            disableTeamControls(false);
+            
+            startTeamTimer('red');
+            startTeamTimer('blue');
+            
+            document.getElementById('gameStatus').innerHTML = '🔴🔵 GAME DIMULAI!';
+            document.getElementById('nextQuestionBtn').innerHTML = '⏩ SOAL BERIKUTNYA';
+            document.getElementById('nextQuestionBtn').disabled = true;
+        }
+        
+        function endGame(winner) {
+            gameActive = false;
+            
+            // Hentikan semua timer
+            if (redStatus.timerInterval) clearInterval(redStatus.timerInterval);
+            if (blueStatus.timerInterval) clearInterval(blueStatus.timerInterval);
+            
+            // Disable semua kontrol
+            disableTeamControls(true);
+            
+            document.getElementById('winnerName').innerHTML = winner;
+            document.getElementById('winnerAnnouncement').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            
+            document.getElementById('gameStatus').innerHTML = '🏆 GAME SELESAI!';
+            document.getElementById('nextQuestionBtn').innerHTML = '🔄 MAIN LAGI';
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+        
+        function resetGame() {
+            gameActive = false;
+            currentLevel = null;
+            
+            // Reset skor
+            redStatus.score = 0;
+            blueStatus.score = 0;
+            document.getElementById('redScore').innerHTML = '0';
+            document.getElementById('blueScore').innerHTML = '0';
+            
+            // Reset timer
+            if (redStatus.timerInterval) clearInterval(redStatus.timerInterval);
+            if (blueStatus.timerInterval) clearInterval(blueStatus.timerInterval);
+            
+            resetTeamTimers();
+            disableTeamControls(true);
+            
+            // Reset tampilan
+            document.getElementById('redQuestion').innerHTML = 'Pilih level dulu';
+            document.getElementById('blueQuestion').innerHTML = 'Pilih level dulu';
+            document.getElementById('redCategory').innerHTML = '-';
+            document.getElementById('blueCategory').innerHTML = '-';
+            document.getElementById('questionCounter').innerHTML = 'Soal ke 0/10';
+            
+            document.getElementById('winnerAnnouncement').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            
+            document.getElementById('gameStatus').innerHTML = '🔴🔵 Pilih level buat mulai!';
+            document.getElementById('nextQuestionBtn').innerHTML = '⏩ SOAL BERIKUTNYA';
+            document.getElementById('nextQuestionBtn').disabled = true;
+            
+            // Reset active class pada level buttons
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>
